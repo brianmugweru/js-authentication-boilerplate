@@ -125,7 +125,7 @@ describe('Authentication', () => {
             expect(res.text).to.be.a('string');
             expect(res.text).to.have.string('phone should be unique');
             done();
-        });
+          });
       });
     });
   });
@@ -144,7 +144,7 @@ describe('Authentication', () => {
             expect(res.text).to.have.string('phone should be unique');
             expect(res.text).to.have.string('email should be unique');
             done();
-        });
+          });
       });
     });
   });
@@ -181,6 +181,51 @@ describe('Authentication', () => {
     });
   });
 
+  it.skip('should send email to user on request of password reset', (done) => {
+    User.deleteMany((err) => {
+      User.create({email: 'brian@example.com', password: 'secret', name: 'hello dude'}, (err, user) => {
+        chai
+          .request(app)
+          .post('/user/send/reset/email')
+          .send({email: 'brian@example.com'})
+          .end((err, res) => {
+            if(err) throw err;
+            expect(res).to.have.status(200);
+            expect(res.text).to.have.string('email sent to brian@example.com');
+            done();
+        });
+      });
+    });
+  });
+
+  it.skip('should not send password reset email if user does not exist', (done) => {
+    User.deleteMany((err) => {
+      chai.request(app)
+        .post('/user/send/reset/email')
+        .send({email: 'brian@example.com'})
+        .end((err, res) => {
+          if(err) throw err;
+          expect(res).to.have.status(200);
+          expect(res.text).to.have.string('email does not exist on our system');
+          done();
+      });
+    });
+  });
+
+  it.skip('should reset user password', (done) => {
+    User.deleteMany((err) => {
+      chai.request(app)
+        .post('/user/password/reset')
+        .send({email: 'brian@example.com', password: 'secret', password_confirm: 'secret'})
+        .end((err, res) => {
+          if(err) throw err; 
+          expect(res).to.have.status(200);
+          expect(res.text).to.have.string('email reset successfully');
+          done();
+      });
+    });
+  });
+
   // make unit test
   it('confirm password is encrypted', (done) => {
     var user = new User({email: 'user@example.com', password: 'secret', phone: '+254712832342', name: 'hello dude'});
@@ -193,7 +238,7 @@ describe('Authentication', () => {
   it('confirm it compares passwords', (done) => {
     var user = new User({email: 'user@example.com', password: 'secret', phone: '+254712832342', name: 'hello dude'});
     user.save((err, user) => {
-     // console.log(user.comparePassword('secret'));
+      // console.log(user.comparePassword('secret'));
       assert.equal(user.comparePassword('secret'), true);
       done();
     });

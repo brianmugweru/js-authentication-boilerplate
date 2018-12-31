@@ -1,7 +1,22 @@
 var User = require('../models/user');
 const passport = require('passport');
+const { body } = require('express-validator/check');
+const { sanitizeBody } = require('express-validator/filter');
 
 module.exports = {
+  validation() {
+    return [
+      body('email')
+        .isEmail()
+        .not()
+        .isEmpty()
+        .normalizeEmail(),
+      body('password')
+        .isLength({ min: 5 })
+        .not()
+        .isEmpty()
+    ]
+  },
   signup(req, res) {
     var user = new User(req.body); 
     user.save((err, user) => {
