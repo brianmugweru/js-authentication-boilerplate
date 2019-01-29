@@ -1,0 +1,6 @@
+set up password confirmation on mocha tests
+set up reset password on mocha
+send reset password email to user
+user clicks link with email, password field, password confirmation field
+post details to app
+set up details in database

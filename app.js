@@ -11,10 +11,11 @@ mongoose.connect(db.mongodb_url, { useNewUrlParser: true, useCreateIndex: true})
 var indexRouter = require('./routes/index');
 
 require('./config/passport');
+require('dotenv').config();
 
 var app = express();
 
-app.use(logger('combined'));
+app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
