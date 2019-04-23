@@ -2,21 +2,18 @@ const { expect, assert } = require('chai');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const app = require('../../app');
-const db = require('../connection');
 const User = require('../../models/user');
 const sinon = require('sinon');
 const stub = sinon.stub().throws();
 const auth = require('../../routes/auth');
 const faker = require('faker');
 const _ = require('lodash');
+const mongoose = require('mongoose');
 const randomString = require('randomstring');
 chai.use(chaiHttp);
 
 let token;
 
-after(() => {
-  process.exit();
-});
 
 
 describe('Authentication', () => {
@@ -58,12 +55,14 @@ describe('Authentication', () => {
   });
 
   after(done => {
-    db.dropDatabase(() => {
+    mongoose.connection.db.dropDatabase(() => {
       console.log('\n Test Database Dropped');
     });
-    db.close(() => {
+    mongoose.connection.close(() => {
       done();
     });
+    process.exit();
+    done();
   });
 
   it('should create new user if email not found', done => {
@@ -122,7 +121,7 @@ describe('Authentication', () => {
       });
   });
 
-  it.only('should give 401 for profile if token is not passed', done => {
+  it('should give 401 for profile if token is not passed', done => {
     chai
       .request(app)
       .get(profile)
